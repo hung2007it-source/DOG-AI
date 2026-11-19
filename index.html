@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🐾 DogVision AI – Nhận diện giống chó</title>
+  <link rel="stylesheet" href="style.css?v=1795076806" />
+  <!-- TensorFlow.js & Teachable Machine Image -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<!-- ===== HERO HEADER ===== -->
+<!-- ===== TOP VIBRANT WIX-STYLE NAVBAR ===== -->
+<nav class="wix-navbar">
+  <div class="wix-nav-container">
+    <div class="wix-brand">
+      <span class="brand-paw">🐾</span>
+      <div class="brand-text">
+        <span class="brand-title">WAGGENBURG <span class="brand-sub">KENNELS & AI</span></span>
+        <span class="brand-tagline">Trại Giống & Chẩn Đoán Thú Cưng Thông Minh</span>
+      </div>
+    </div>
+    <div class="wix-nav-links">
+      <a href="#detectSection" class="wix-nav-item active" onclick="switchFeature('detect')">📸 AI Scanner</a>
+      <a href="#pediaSection" class="wix-nav-item" onclick="switchFeature('pedia')">📖 50 Giống Chó</a>
+      <a href="#compareSection" class="wix-nav-item" onclick="switchFeature('compare')">⚖️ So Sánh Giống</a>
+      <a href="#calcSection" class="wix-nav-item" onclick="switchFeature('calc')">🥩 Dinh Dưỡng & Nuôi</a>
+      <a href="#healthSection" class="wix-nav-item" onclick="switchFeature('health')">🩺 Bác Sĩ & Vaccine</a>
+      <a href="#quizSection" class="wix-nav-item" onclick="switchFeature('quiz')">🎯 Gợi Ý Cún Cưng</a>
+    </div>
+    <div class="wix-nav-cta">
+      <button class="btn-wix-adopt" onclick="toggleAIChat()">
+        <i class="fa-solid fa-comments"></i> Trò Chuyện Bác Sĩ AI
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO BANNER WIX DOG BREEDER (CUTE / VUI NHỘN & SỐNG ĐỘNG) ===== -->
+<header class="wix-hero">
+  <div class="hero-bg-overlay"></div>
+  <!-- Floating playful elements -->
+  <div class="floating-shape shape-paw-1">🐾</div>
+  <div class="floating-shape shape-bone-1">🦴</div>
+  <div class="floating-shape shape-heart-1">❤️</div>
+  <div class="floating-shape shape-paw-2">🐾</div>
+  <div class="floating-shape shape-bone-2">🦴</div>
+
+  <div class="wix-hero-inner">
+    <div class="wix-hero-badge">
+      <span class="badge-paw">🐾</span>
+      <span>HỆ THỐNG TRẠI GIỐNG & BÁC SĨ THÚ Y AI ĐẦU TIÊN TẠI VIỆT NAM</span>
+    </div>
+
+    <h1 class="wix-hero-headline">
+      Where Lifelong <br/><span class="headline-highlight">Friendship Begins 🦴</span>
+    </h1>
+    <p class="wix-hero-sub">
+      Nơi tình bạn trọn đời bắt đầu · Nhận diện chính xác 50 giống chó thuần chủng · Bách khoa dinh dưỡng, bảng giá thị trường & Bác sĩ thú y AI tương tác trực tuyến 24/7!
+    </p>
+
+    <!-- Interactive Action Buttons -->
+    <div class="wix-hero-buttons">
+      <button class="btn-hero-primary" onclick="switchFeature('detect'); document.getElementById('detectSection').scrollIntoView({behavior:'smooth'});">
+        <i class="fa-solid fa-camera"></i> Thử AI Scanner Nhận Diện Ngay
+      </button>
+      <button class="btn-hero-secondary" onclick="switchFeature('quiz'); document.getElementById('quizSection').scrollIntoView({behavior:'smooth'});">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Làm Trắc Nghiệm Chọn Cún (Quiz)
+      </button>
+      <button class="btn-hero-tertiary" onclick="toggleAIChat()">
+        <i class="fa-solid fa-stethoscope"></i> Chat Trực Tiếp Với Bác Sĩ AI
+      </button>
+    </div>
+
+    <!-- WIX PUPPY HIGHLIGHT SHOWCASE CAROUSEL -->
+    <div class="wix-puppy-showcase">
+      <div class="puppy-card card-golden" onclick="testSample('Golden_Retriever')">
+        <div class="puppy-card-img">
+          <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=600&auto=format&fit=crop" alt="Golden Retriever" />
+          <span class="puppy-tag"><i class="fa-solid fa-heart"></i> Siêu Thân Thiện</span>
+        </div>
+        <div class="puppy-card-info">
+          <h4>Golden Retriever</h4>
+          <p>Dòng chó gia đình hiền lành số 1</p>
+          <span class="btn-card-action">Xem AI Phân Tích →</span>
+        </div>
+      </div>
+
+      <div class="puppy-card card-corgi" onclick="testSample('Pembroke_Welsh_Corgi')">
+        <div class="puppy-card-img">
+          <img src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=600&auto=format&fit=crop" alt="Corgi" />
+          <span class="puppy-tag tag-orange"><i class="fa-solid fa-bolt"></i> Năng Động</span>
+        </div>
+        <div class="puppy-card-info">
+          <h4>Welsh Corgi</h4>
+          <p>Mông trái tim, lùn mập đáng yêu</p>
+          <span class="btn-card-action">Xem AI Phân Tích →</span>
+        </div>
+      </div>
+
+      <div class="puppy-card card-husky" onclick="testSample('Siberian_Husky')">
+        <div class="puppy-card-img">
+          <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&auto=format&fit=crop" alt="Husky" />
+          <span class="puppy-tag tag-blue"><i class="fa-solid fa-snowflake"></i> Xứ Lạnh</span>
+        </div>
+        <div class="puppy-card-info">
+          <h4>Siberian Husky</h4>
+          <p>Bộ lông ấm áp & cá tính hóm hỉnh</p>
+          <span class="btn-card-action">Xem AI Phân Tích →</span>
+        </div>
+      </div>
+
+      <div class="puppy-card card-shiba" onclick="testSample('Shiba_Inu')">
+        <div class="puppy-card-img">
+          <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&auto=format&fit=crop" alt="Shiba Inu" />
+          <span class="puppy-tag tag-purple"><i class="fa-solid fa-crown"></i> Quốc Khuyển Nhật</span>
+        </div>
+        <div class="puppy-card-info">
+          <h4>Shiba Inu</h4>
+          <p>Gương mặt meme biết cười nổi tiếng</p>
+          <span class="btn-card-action">Xem AI Phân Tích →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK INTERACTIVE FEATURE NAVIGATION PILLS -->
+    <div class="wix-feature-switch-bar">
+      <span class="switch-title"><i class="fa-solid fa-compass"></i> KHÁM PHÁ CÁC TÍNH NĂNG CHUYÊN NGHIỆP:</span>
+      <div class="main-feature-switch">
+        <button class="nav-pill active" id="btnNavDetect" onclick="switchFeature('detect')">
+          <i class="fa-solid fa-camera"></i> 📸 AI Scanner (Quét Ảnh)
+        </button>
+        <button class="nav-pill" id="btnNavCompare" onclick="switchFeature('compare')">
+          <i class="fa-solid fa-code-compare"></i> ⚖️ So Sánh 2 Giống
+        </button>
+        <button class="nav-pill" id="btnNavPedia" onclick="switchFeature('pedia')">
+          <i class="fa-solid fa-book-atlas"></i> 📖 Bách Khoa 50 Giống
+        </button>
+        <button class="nav-pill" id="btnNavCalc" onclick="switchFeature('calc')">
+          <i class="fa-solid fa-bowl-food"></i> 🥩 Tính Khẩu Phần & Nuôi
+        </button>
+        <button class="nav-pill" id="btnNavHealth" onclick="switchFeature('health')">
+          <i class="fa-solid fa-user-doctor"></i> 🩺 Bác Sĩ & Vaccine
+        </button>
+        <button class="nav-pill" id="btnNavQuiz" onclick="switchFeature('quiz')">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> 🎯 Gợi Ý Giống (Quiz)
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- ===== MAIN APP ===== -->
+<main class="container">
+
+  <!-- MODEL URL CONFIG -->
+  <section class="card model-config" id="modelSetup">
+    <div class="card-header">
+      <i class="fa-solid fa-link card-icon"></i>
+      <h2>⚙️ Cấu hình Model AI</h2>
+    </div>
+    <p class="hint">Đường dẫn Model Google Teachable Machine của bạn (đã được nạp sẵn):</p>
+    <div class="input-row">
+      <input type="text" id="modelUrlInput" value="https://teachablemachine.withgoogle.com/models/okrCB2SBm/" placeholder="https://teachablemachine.withgoogle.com/models/okrCB2SBm/" />
+      <button class="btn btn-primary" onclick="loadModel()">
+        <i class="fa-solid fa-arrows-rotate"></i> Nạp lại Model
+      </button>
+    </div>
+    <div id="modelStatus" class="status-box hidden"></div>
+
+    <!-- Demo mode -->
+    <div class="demo-notice">
+      <i class="fa-solid fa-flask"></i>
+      <strong>Chưa có model?</strong> Nhấn <button class="btn-link" onclick="useDemoMode()">Demo Mode</button> để xem giao diện với dữ liệu mẫu.
+    </div>
+  </section>
+
+  <!-- CAMERA / UPLOAD -->
+  <section class="card detect-section" id="detectSection">
+    <div class="card-header">
+      <i class="fa-solid fa-camera card-icon"></i>
+      <h2>📸 Nhận diện giống chó</h2>
+    </div>
+
+    <div class="detect-tabs">
+      <button class="tab active" onclick="switchTab(this, 'camera')"><i class="fa-solid fa-camera"></i> Camera</button>
+      <button class="tab" onclick="switchTab(this, 'upload')"><i class="fa-solid fa-image"></i> Tải ảnh</button>
+    </div>
+
+    <!-- Camera pane -->
+    <div class="tab-pane active" id="pane-camera">
+      <div class="webcam-wrapper">
+        <div id="webcamContainer">
+          <div class="cam-placeholder">
+            <i class="fa-solid fa-dog"></i>
+            <p>Camera sẽ hiển thị ở đây</p>
+          </div>
+        </div>
+        <div class="cam-controls">
+          <button class="btn btn-primary" id="btnStartCam" onclick="startCamera()">
+            <i class="fa-solid fa-play"></i> Bật camera
+          </button>
+          <button class="btn btn-danger" id="btnStopCam" onclick="stopCamera()" style="display:none;">
+            <i class="fa-solid fa-stop"></i> Dừng
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload pane -->
+    <div class="tab-pane" id="pane-upload">
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="onDragOver(event)" ondrop="onDrop(event)">
+        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+        <p>Kéo thả ảnh chó vào đây<br/><span>hoặc nhấn để chọn file</span></p>
+        <input type="file" id="fileInput" accept="image/*" hidden onchange="onFileSelect(event)"/>
+      </div>
+
+      <!-- Quick sample test buttons -->
+      <div class="sample-test-wrap" style="margin-top: 16px;">
+        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 8px;">
+          ⚡ Hoặc chọn nhanh ảnh mẫu có sẵn để thử nghiệm:
+        </span>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.84rem;" onclick="testSample('Golden_Retriever')">🦮 Golden Retriever</button>
+          <button type="button" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.84rem;" onclick="testSample('Siberian_Husky')">🐺 Siberian Husky</button>
+          <button type="button" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.84rem;" onclick="testSample('Pembroke_Welsh_Corgi')">🦊 Corgi</button>
+          <button type="button" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.84rem;" onclick="testSample('Pug')">🐶 Mặt xệ Pug</button>
+          <button type="button" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.84rem;" onclick="testSample('Shiba_Inu')">🐕 Shiba Inu</button>
+          <button type="button" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.84rem;" onclick="testSample('Dalmatian')">🐾 Chó Đốm</button>
+        </div>
+      </div>
+      <div id="uploadPreview" class="upload-preview hidden">
+        <img id="previewImg" src="" alt="Preview" />
+        <button class="btn btn-primary" onclick="predictFromImage()">
+          <i class="fa-solid fa-magnifying-glass"></i> Phân tích ảnh
+        </button>
+        <button class="btn btn-outline" onclick="resetUpload()">
+          <i class="fa-solid fa-rotate"></i> Chọn ảnh khác
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT PANEL -->
+  <section class="card result-card" id="resultCard" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-paw card-icon"></i>
+      <h2>🔍 Kết quả nhận diện</h2>
+    </div>
+
+    <!-- Cảnh báo độ tin cậy thấp nếu < 40% -->
+    <div id="lowConfidenceAlert" class="alert-box" style="display:none; margin-bottom: 16px;">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div>
+        <strong>Độ tin cậy thấp (&lt; 40%)!</strong>
+        <span>Hình ảnh có thể bị mờ, góc chụp khuất hoặc không phải loài chó. Hãy chụp rõ góc chính diện để AI nhận diện chuẩn xác nhất.</span>
+      </div>
+    </div>
+
+    <div class="result-top">
+      <div class="breed-name-wrap">
+        <span class="breed-label">Giống chó phát hiện</span>
+        <h3 id="topBreedName" class="breed-name">–</h3>
+        <div id="topBreedScore" class="confidence-pill">–%</div>
+
+        <!-- Các nút thao tác tiện ích: Đọc giọng nói & Xuất hồ sơ -->
+        <div class="result-actions">
+          <button class="btn btn-action" id="btnSpeak" onclick="toggleSpeakBreedInfo()">
+            <i class="fa-solid fa-volume-high" id="speakIcon"></i> <span id="speakBtnText">Nghe trợ lý AI đọc</span>
+          </button>
+          <button class="btn btn-action btn-print" onclick="window.print()">
+            <i class="fa-solid fa-file-pdf"></i> In / Xuất Hồ Sơ PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Huy hiệu tương thích với chủ nuôi -->
+    <div id="suitabilityBadges" class="suitability-bar"></div>
+
+    <!-- All class probabilities bar chart -->
+    <div id="allPredictions" class="all-predictions"></div>
+
+    <!-- Nút kích hoạt tra cứu giống chó lạ / đóng góp dữ liệu -->
+    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--border); text-align: center;">
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px;">
+        🤔 <em>Ảnh không khớp hoặc đây là giống chó lạ chưa có trong hệ thống 50 loài?</em>
+      </p>
+      <button type="button" class="btn btn-action" style="background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.4); color: var(--secondary);" onclick="toggleUnknownBreedBox()">
+        <i class="fa-solid fa-magnifying-glass-plus"></i> 🌐 Tra cứu & Thu thập dữ liệu giống chó mới này
+      </button>
+    </div>
+  </section>
+
+  <!-- KHUNG TRA CỨU & THU THẬP GIỐNG CHÓ LẠ (OUT-OF-DISTRIBUTION KNOWLEDGE EXPANSION) -->
+  <section class="card unknown-breed-card" id="unknownBreedSection" style="display:none; border-color: rgba(139, 92, 246, 0.4);">
+    <div class="card-header">
+      <i class="fa-solid fa-globe card-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--secondary);"></i>
+      <div>
+        <h2>🌐 Tra cứu & Thu thập dữ liệu giống chó mới</h2>
+        <p class="hint" style="margin-bottom:0;">Thu thập thông tin bách khoa từ Internet và lưu ảnh vào kho dữ liệu mới (Active Learning)!</p>
+      </div>
+    </div>
+
+    <div class="input-row" style="margin-bottom: 16px;">
+      <input type="text" id="unknownSearchInput" placeholder="Ví dụ: Chó Phú Quốc, Akita, Dingo, Chó Lài..." onkeypress="if(event.key==='Enter') searchUnknownBreed();" />
+      <button type="button" class="btn btn-primary" style="background: var(--secondary);" onclick="searchUnknownBreed()">
+        <i class="fa-solid fa-search"></i> Tra cứu Internet
+      </button>
+    </div>
+
+    <!-- Trạng thái tra cứu -->
+    <div id="unknownSearchStatus" class="status-box hidden"></div>
+
+    <!-- Kết quả tra cứu trực tuyến -->
+    <div id="unknownSearchResult" style="display:none; margin-top: 20px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 16px;">
+        <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;">
+          <img id="unknownBreedImg" src="" alt="Ảnh giống chó tìm được" style="width: 100%; height: 220px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600'" />
+        </div>
+        <div style="display:flex; flex-direction:column; justify-content:center;">
+          <h3 id="unknownBreedTitle" style="color: var(--secondary); font-size: 1.4rem; font-weight: 800; margin-bottom: 8px;">–</h3>
+          <p id="unknownBreedExtract" style="font-size: 0.92rem; color: var(--text); line-height: 1.6; margin-bottom: 12px;">–</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a id="unknownBreedWikiLink" href="#" target="_blank" class="ref-link" style="color:var(--secondary); font-weight:700;">
+              <i class="fa-solid fa-book-open"></i> Đọc bài viết gốc trên Wikipedia
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Đóng góp vào kho dữ liệu mới -->
+      <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <strong style="color: var(--success); display:block; margin-bottom:2px;">
+            <i class="fa-solid fa-database"></i> Đóng góp ảnh này vào kho dữ liệu mới?
+          </strong>
+          <small style="color: var(--text-muted);">Lưu ảnh người dùng vừa tải lên kèm nhãn giống chó để phục vụ huấn luyện mô hình ở phiên bản tiếp theo.</small>
+        </div>
+        <button type="button" class="btn btn-action" id="btnSaveNewData" style="background: rgba(16, 185, 129, 0.2); border-color: var(--success); color: var(--success);" onclick="saveToDataset()">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Lưu vào tập dữ liệu mới
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BREED INFO PANEL -->
+  <section class="card breed-info-card" id="breedInfoCard" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-landmark card-icon"></i>
+      <h2>🏛️ Lịch sử hình thành & Nguồn gốc giống chó</h2>
+    </div>
+    <div id="breedInfoContent" class="breed-info-grid"></div>
+  </section>
+
+  <!-- CARE GUIDE PANEL -->
+  <section class="card care-card" id="careCard" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-hand-holding-heart card-icon"></i>
+      <h2>🩺 Cẩm nang chăm sóc toàn diện (Có ảnh minh họa)</h2>
+    </div>
+    <div id="careContent" class="care-grid"></div>
+  </section>
+
+  <!-- AI TECHNICAL SPECS -->
+  <section class="card tech-card" id="techSpecsCard" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-microchip card-icon"></i>
+      <h2>⚙️ Thông số kỹ thuật & Hiệu năng AI</h2>
+    </div>
+    <div id="techSpecsContent" class="tech-grid"></div>
+  </section>
+
+  <!-- ACADEMIC REFERENCES & CITATIONS -->
+  <section class="card references-card" id="referencesCard" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-graduation-cap card-icon"></i>
+      <h2>📚 Nguồn kiểm định & Tham khảo học thuật chính thống</h2>
+    </div>
+    <div class="references-grid" id="referencesContent"></div>
+  </section>
+
+  <!-- DOG BREED MATCH QUIZ SECTION -->
+  <section class="card quiz-section" id="quizSection" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-wand-magic-sparkles card-icon"></i>
+      <div>
+        <h2>🎯 Trắc Nghiệm: Tìm Giống Chó Hoàn Hảo Dành Cho Bạn</h2>
+        <p class="hint" style="margin-bottom:0;">Trả lời 4 câu hỏi nhanh để thuật toán AI phân tích lối sống và gợi ý bé cún phù hợp nhất!</p>
+      </div>
+    </div>
+
+    <form id="quizForm" onsubmit="event.preventDefault(); runBreedQuiz();">
+      <!-- Câu 1: Không gian sống -->
+      <div class="quiz-question">
+        <label class="qq-title"><i class="fa-solid fa-house-chimney"></i> 1. Không gian sống hiện tại của bạn?</label>
+        <div class="qq-options">
+          <label class="qq-opt">
+            <input type="radio" name="q_space" value="apartment" checked />
+            <span class="opt-card">
+              <span class="opt-emoji">🏢</span>
+              <strong>Căn hộ chung cư / Phòng nhỏ</strong>
+              <small>Thích hợp chó nhỏ, vừa, ít sủa và ít rụng lông</small>
+            </span>
+          </label>
+          <label class="qq-opt">
+            <input type="radio" name="q_space" value="house" />
+            <span class="opt-card">
+              <span class="opt-emoji">🏡</span>
+              <strong>Nhà phố có sân nhỏ</strong>
+              <small>Thích hợp hầu hết các giống chó kích thước vừa</small>
+            </span>
+          </label>
+          <label class="qq-opt">
+            <input type="radio" name="q_space" value="yard" />
+            <span class="opt-card">
+              <span class="opt-emoji">🌳</span>
+              <strong>Nhà vườn rộng / Biệt thự</strong>
+              <small>Thoải mái cho chó lớn, chó lao động vận động nhiều</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Câu 2: Thời gian vận động -->
+      <div class="quiz-question">
+        <label class="qq-title"><i class="fa-solid fa-person-running"></i> 2. Thời gian bạn có thể dắt cún đi dạo mỗi ngày?</label>
+        <div class="qq-options">
+          <label class="qq-opt">
+            <input type="radio" name="q_time" value="low" checked />
+            <span class="opt-card">
+              <span class="opt-emoji">🛋️</span>
+              <strong>Dưới 30 phút / ngày</strong>
+              <small>Bận rộn, thích cún ngoan, lười vận động một chút</small>
+            </span>
+          </label>
+          <label class="qq-opt">
+            <input type="radio" name="q_time" value="medium" />
+            <span class="opt-card">
+              <span class="opt-emoji">🚶</span>
+              <strong>30 - 60 phút / ngày</strong>
+              <small>Đi dạo công viên, chơi đùa vui vẻ mỗi chiều</small>
+            </span>
+          </label>
+          <label class="qq-opt">
+            <input type="radio" name="q_time" value="high" />
+            <span class="opt-card">
+              <span class="opt-emoji">⚡</span>
+              <strong>Trên 60 - 90 phút / ngày</strong>
+              <small>Thích chạy bộ đường dài, leo núi, thể thao ngoài trời</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Câu 3: Môi trường gia đình & Người nuôi -->
+      <div class="quiz-question">
+        <label class="qq-title"><i class="fa-solid fa-users"></i> 3. Bạn hoặc gia đình có đặc điểm nào dưới đây?</label>
+        <div class="qq-options">
+          <label class="qq-opt">
+            <input type="radio" name="q_env" value="kids" checked />
+            <span class="opt-card">
+              <span class="opt-emoji">👶</span>
+              <strong>Có trẻ nhỏ trong nhà</strong>
+              <small>Cần giống chó cực kỳ hiền từ, kiên nhẫn và yêu trẻ</small>
+            </span>
+          </label>
+          <label class="qq-opt">
+            <input type="radio" name="q_env" value="first" />
+            <span class="opt-card">
+              <span class="opt-emoji">🔰</span>
+              <strong>Người mới nuôi cún lần đầu</strong>
+              <small>Cần giống chó dễ huấn luyện, biết nghe lời và quấn chủ</small>
+            </span>
+          </label>
+          <label class="qq-opt">
+            <input type="radio" name="q_env" value="guard" />
+            <span class="opt-card">
+              <span class="opt-emoji">🛡️</span>
+              <strong>Muốn chó bảo vệ & giữ nhà</strong>
+              <small>Canh gác nhạy bén, dũng cảm và cảnh giác với người lạ</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Câu 4: Ngân sách đón cún -->
+      <div class="quiz-question">
+        <label class="qq-title"><i class="fa-solid fa-coins"></i> 4. Ngân sách dự kiến khi đón bé cún về nhà?</label>
+        <div class="qq-options">
+          <label class="qq-opt">
+            <input type="radio" name="q_budget" value="low" checked />
+            <span class="opt-card">
+              <span class="opt-emoji">💵</span>
+              <strong>Tiết kiệm (Dưới 10 triệu VNĐ)</strong>
+              <small>Chó sinh sản trong nước thuần chủng nuôi cảnh</small>
+            </span>
+          </label>
+          <label class="qq-opt">
+            <input type="radio" name="q_budget" value="mid" />
+            <span class="opt-card">
+              <span class="opt-emoji">💎</span>
+              <strong>Vừa phải (10 - 20 triệu VNĐ)</strong>
+              <small>Chó có phả hệ VKA chuẩn, bố mẹ đẹp</small>
+            </span>
+          </label>
+          <label class="qq-opt">
+            <input type="radio" name="q_budget" value="high" />
+            <span class="opt-card">
+              <span class="opt-emoji">👑</span>
+              <strong>Cao cấp (Trên 20 triệu VNĐ)</strong>
+              <small>Nhập khẩu Thái Lan/châu Âu có gia phả quốc tế FCI</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px;">
+        <button type="submit" class="btn btn-primary" style="padding: 14px 32px; font-size: 1.05rem;">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Phân Tích & Gợi Ý Giống Chó Tốt Nhất
+        </button>
+      </div>
+    </form>
+
+    <!-- KẾT QUẢ GỢI Ý QUIZ -->
+    <div id="quizResultArea" style="display:none; margin-top: 32px;">
+      <h3 style="text-align:center; font-size:1.35rem; color:var(--primary); margin-bottom: 20px;">
+        🎉 TOP 3 GIỐNG CHÓ TƯƠNG THÍCH NHẤT VỚI BẠN
+      </h3>
+      <div class="quiz-results-grid" id="quizResultsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. BÁCH KHOA TOÀN THƯ 50 GIỐNG CHÓ (PEDIA) -->
+  <!-- ========================================== -->
+  <section class="card pedia-section" id="pediaSection" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-book-atlas card-icon"></i>
+      <div>
+        <h2>📖 Bách Khoa Toàn Thư 50 Giống Chó Chuẩn Quốc Tế</h2>
+        <p class="subtitle" style="font-size:0.9rem; color:var(--text-muted); margin-top:2px;">Tra cứu dữ liệu ngoại hình, đặc tính, mức độ chăm sóc và giá cả tức thì.</p>
+      </div>
+    </div>
+
+    <!-- Pedia Search & Filter Toolbar -->
+    <div class="pedia-toolbar">
+      <div class="search-input-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="pediaSearchInput" placeholder="Tìm theo tên giống chó (vd: Corgi, Husky, Becgie, Golden, Poodle...)" oninput="filterPediaGrid()" />
+        <button class="clear-search-btn" onclick="document.getElementById('pediaSearchInput').value=''; filterPediaGrid();"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="filter-group">
+        <select id="pediaFilterSize" onchange="filterPediaGrid()" class="styled-select">
+          <option value="all">📏 Tất cả kích thước</option>
+          <option value="small">Nhỏ gọn (&lt; 10kg: Pug, Corgi, Chihuahua...)</option>
+          <option value="medium">Trung bình (10 - 25kg: Shiba, Chó Đốm, Border Collie...)</option>
+          <option value="large">Lớn (&gt; 25kg: Golden, Husky, Becgie, Rottweiler...)</option>
+        </select>
+        <select id="pediaFilterEnergy" onchange="filterPediaGrid()" class="styled-select">
+          <option value="all">⚡ Tất cả mức năng lượng</option>
+          <option value="high">Rất tăng động (Cần chạy nhảy nhiều)</option>
+          <option value="low">Điềm tĩnh / Thư thái (Hợp nhà phố)</option>
+        </select>
+        <select id="pediaFilterTrain" onchange="filterPediaGrid()" class="styled-select">
+          <option value="all">🧠 Độ dễ huấn luyện</option>
+          <option value="easy">Cực kỳ thông minh / Dễ dạy (5 sao)</option>
+          <option value="stubborn">Độc lập / Cá tính mạnh</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="pedia-count-bar">
+      <span>Hiển thị: <strong id="pediaCountDisplay" style="color:var(--primary);">50</strong> giống chó</span>
+    </div>
+
+    <!-- Pedia Grid -->
+    <div class="pedia-grid" id="pediaGrid"></div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. SO SÁNH TRỰC QUAN 2 GIỐNG CHÓ (COMPARE) -->
+  <!-- ========================================== -->
+  <section class="card compare-section" id="compareSection" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-code-compare card-icon"></i>
+      <div>
+        <h2>⚖️ Đối Chiếu Song Song Giữa 2 Giống Chó</h2>
+        <p class="subtitle" style="font-size:0.9rem; color:var(--text-muted); margin-top:2px;">So sánh kích thước, tính cách, chỉ số thông minh, độ rụng lông và mức giá thị trường.</p>
+      </div>
+    </div>
+
+    <!-- Select 2 Breeds -->
+    <div class="compare-selector-grid">
+      <div class="compare-select-col">
+        <label for="compareBreedA"><i class="fa-solid fa-dog" style="color:#f97316;"></i> Chọn Giống Chó 1:</label>
+        <select id="compareBreedA" class="styled-select select-lg" onchange="renderBreedComparison()"></select>
+      </div>
+      <div class="vs-circle">VS</div>
+      <div class="compare-select-col">
+        <label for="compareBreedB"><i class="fa-solid fa-dog" style="color:#8b5cf6;"></i> Chọn Giống Chó 2:</label>
+        <select id="compareBreedB" class="styled-select select-lg" onchange="renderBreedComparison()"></select>
+      </div>
+    </div>
+
+    <!-- Comparison Table / Render Area -->
+    <div id="compareResultContainer" style="margin-top: 24px;"></div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 4. TÍNH KHẨU PHẦN ĂN & CHI PHÍ NUÔI (CALC) -->
+  <!-- ========================================== -->
+  <section class="card calc-section" id="calcSection" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-calculator card-icon"></i>
+      <div>
+        <h2>🥩 Công Cụ Tính Khẩu Phần Dinh Dưỡng & Dự Toán Chi Phí Nuôi Hằng Tháng</h2>
+        <p class="subtitle" style="font-size:0.9rem; color:var(--text-muted); margin-top:2px;">Dựa trên tiêu chuẩn dinh dưỡng khoa học FEDIAF & NRC cho loài chó.</p>
+      </div>
+    </div>
+
+    <div class="calc-grid">
+      <div class="calc-input-panel">
+        <div class="calc-field">
+          <label>🐶 Giống chó:</label>
+          <select id="calcBreedSelect" class="styled-select" onchange="syncBreedWeightCalc()"></select>
+        </div>
+        <div class="calc-field">
+          <label>⚖️ Cân nặng hiện tại (kg):</label>
+          <input type="number" id="calcWeight" value="20" min="1" max="100" step="0.5" class="styled-input" oninput="calculateDietAndCost()" />
+        </div>
+        <div class="calc-field">
+          <label>🎂 Độ tuổi / Giai đoạn phát triển:</label>
+          <select id="calcAgeStage" class="styled-select" onchange="calculateDietAndCost()">
+            <option value="puppy_rapid">Cún con cai sữa (2 - 4 tháng) - Tăng trưởng nhanh</option>
+            <option value="puppy">Cún nhỡ (4 - 12 tháng)</option>
+            <option value="adult" selected>Chó trưởng thành (1 - 7 tuổi)</option>
+            <option value="senior">Chó cao tuổi (&gt; 7 tuổi) - Nhu cầu năng lượng giảm</option>
+            <option value="pregnant">Chó mẹ đang mang thai hoặc cho con bú</option>
+          </select>
+        </div>
+        <div class="calc-field">
+          <label>🏃 Cường độ vận động mỗi ngày:</label>
+          <select id="calcActivity" class="styled-select" onchange="calculateDietAndCost()">
+            <option value="low">Ít vận động (Ở trong nhà, dạo dưới 30 phút/ngày)</option>
+            <option value="normal" selected>Trung bình (Đi dạo, chơi đùa 30 - 60 phút/ngày)</option>
+            <option value="high">Rất năng động (Chạy nhảy, tập luyện &gt; 90 phút/ngày)</option>
+          </select>
+        </div>
+        <div class="calc-field">
+          <label>🍖 Chế độ ăn dự kiến:</label>
+          <select id="calcDietType" class="styled-select" onchange="calculateDietAndCost()">
+            <option value="dry_kibble" selected>Hạt khô cao cấp (Royal Canin, Taste of the Wild, Orijen...)</option>
+            <option value="wet_barf">Thức ăn tươi tự nấu / BARF (Thịt bò, ức gà, củ quả)</option>
+            <option value="mixed">Kết hợp nửa Hạt khô + nửa Cơm thịt rau củ</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="calc-result-panel" id="calcOutputArea">
+        <!-- Rendered results -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 5. BÁC SĨ THÚ Y ẢO & LỊCH TIÊM CHỦNG (HEALTH)-->
+  <!-- ========================================== -->
+  <section class="card health-section" id="healthSection" style="display:none;">
+    <div class="card-header">
+      <i class="fa-solid fa-user-doctor card-icon"></i>
+      <div>
+        <h2>🩺 Bác Sĩ Thú Y AI & Sổ Theo Dõi Tiêm Phòng / Tẩy Giun</h2>
+        <p class="subtitle" style="font-size:0.9rem; color:var(--text-muted); margin-top:2px;">Tra cứu thực phẩm độc hại khẩn cấp, biểu hiện bệnh và lịch vaccine chuẩn thú y.</p>
+      </div>
+    </div>
+
+    <!-- Sub tabs in Health -->
+    <div class="health-subtabs">
+      <button class="health-subtab active" onclick="switchHealthTab('emergency')"><i class="fa-solid fa-skull-crossbones"></i> Tra Cứu Độc Tố Thức Ăn</button>
+      <button class="health-subtab" onclick="switchHealthTab('symptoms')"><i class="fa-solid fa-stethoscope"></i> Bắt Bệnh Triệu Chứng</button>
+      <button class="health-subtab" onclick="switchHealthTab('schedule')"><i class="fa-solid fa-syringe"></i> Lịch Tiêm & Tẩy Giun Chuẩn</button>
+    </div>
+
+    <!-- 1. CẢNH BÁO THỨC ĂN NGUY HIỂM -->
+    <div class="health-tab-pane active" id="pane-emergency">
+      <div class="toxic-search-wrap">
+        <label><i class="fa-solid fa-magnifying-glass"></i> Kiểm tra thức ăn có cho cún ăn được không:</label>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <input type="text" id="toxicFoodInput" class="styled-input" placeholder="Nhập tên thức ăn (vd: Socola, Hành tây, Nho, Xương gà, Trứng, Bơ, Sữa tươi...)" oninput="checkToxicFood()" />
+          <button class="btn btn-primary" onclick="checkToxicFood()"><i class="fa-solid fa-shield-halved"></i> Kiểm tra ngay</button>
+        </div>
+      </div>
+      <div id="toxicResultAlert" style="margin-top:16px;"></div>
+      <div class="toxic-quick-tags" style="margin-top:16px;">
+        <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">Thường gặp:</span>
+        <button class="tag-btn" onclick="quickCheckToxic('Socola')">🍫 Socola</button>
+        <button class="tag-btn" onclick="quickCheckToxic('Nho / Nho khô')">🍇 Nho / Nho khô</button>
+        <button class="tag-btn" onclick="quickCheckToxic('Hành tỏi')">🧅 Hành & Tỏi</button>
+        <button class="tag-btn" onclick="quickCheckToxic('Xương gia cầm')">🍗 Xương gà đã nấu</button>
+        <button class="tag-btn" onclick="quickCheckToxic('Quả bơ')">🥑 Quả bơ (Persin)</button>
+        <button class="tag-btn" onclick="quickCheckToxic('Cà rốt')">🥕 Cà rốt (An toàn)</button>
+        <button class="tag-btn" onclick="quickCheckToxic('Ức gà luộc')">🍗 Ức gà (Tốt)</button>
+      </div>
+    </div>
+
+    <!-- 2. BẮT BỆNH TRIỆU CHỨNG -->
+    <div class="health-tab-pane" id="pane-symptoms" style="display:none;">
+      <p style="color:var(--text-muted); margin-bottom:14px; font-size:0.92rem;">
+        Chọn các triệu chứng mà bé cún của bạn đang gặp phải để AI đưa ra chẩn đoán sơ bộ và hướng xử lý khẩn cấp:
+      </p>
+      <div class="symptoms-grid">
+        <label class="symptom-chip"><input type="checkbox" value="vomit" onchange="analyzeSymptoms()"/> 🤮 Nôn mửa liên tục</label>
+        <label class="symptom-chip"><input type="checkbox" value="diarrhea" onchange="analyzeSymptoms()"/> 💩 Tiêu chảy / Phân lẫn máu</label>
+        <label class="symptom-chip"><input type="checkbox" value="fever" onchange="analyzeSymptoms()"/> 🌡️ Sốt cao / Tai và nách nóng ran</label>
+        <label class="symptom-chip"><input type="checkbox" value="lethargy" onchange="analyzeSymptoms()"/> 😴 Lờ đờ, bỏ ăn, nằm một chỗ</label>
+        <label class="symptom-chip"><input type="checkbox" value="scratch" onchange="analyzeSymptoms()"/> 🐾 Gãi ngứa, rụng lông mảng, da đỏ</label>
+        <label class="symptom-chip"><input type="checkbox" value="cough" onchange="analyzeSymptoms()"/> 🫁 Ho khạc khan như hóc xương</label>
+        <label class="symptom-chip"><input type="checkbox" value="limp" onchange="analyzeSymptoms()"/> 🦴 Đi khập khiễng, đau khớp</label>
+      </div>
+      <div id="symptomsDiagnosisArea" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- 3. LỊCH TIÊM PHÒNG -->
+    <div class="health-tab-pane" id="pane-schedule" style="display:none;">
+      <div class="vaccine-timeline" id="vaccineTimeline">
+        <!-- Rendered vaccine schedules -->
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO GUIDE -->
+  <section class="card guide-card">
+    <div class="card-header">
+      <i class="fa-solid fa-book card-icon"></i>
+      <h2>📚 Hướng dẫn train model Teachable Machine</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Truy cập Teachable Machine</h4>
+        <p>Mở <a href="https://teachablemachine.withgoogle.com" target="_blank">teachablemachine.withgoogle.com</a> → Chọn <strong>Image Project → Standard image model</strong></p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Tạo các class giống chó</h4>
+        <p>Mỗi class = 1 giống chó (vd: Poodle, Husky, Golden Retriever…). Thêm ít nhất <strong>20–50 ảnh/class</strong> từ webcam hoặc upload ảnh.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Train model</h4>
+        <p>Nhấn <strong>"Train Model"</strong>. Đợi quá trình hoàn tất (thường 1–5 phút tuỳ số class & ảnh).</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Export & lấy URL</h4>
+        <p>Nhấn <strong>"Export Model → Upload my model"</strong> → Copy URL (dạng <code>https://teachablemachine.withgoogle.com/models/ABC123/</code>)</p>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <h4>Paste vào app này</h4>
+        <p>Dán URL vào ô <strong>"Cấu hình Model AI"</strong> ở trên → Nhấn <strong>"Tải Model"</strong> → Bắt đầu nhận diện!</p>
+      </div>
+      <div class="step step-tip">
+        <div class="step-num"><i class="fa-solid fa-lightbulb"></i></div>
+        <h4>Mẹo để model chuẩn hơn</h4>
+        <ul>
+          <li>Dùng ảnh đa dạng (nhiều góc, ánh sáng khác nhau)</li>
+          <li>Thêm class "Không phải chó" để lọc sai</li>
+          <li>Mỗi class ≥ 50 ảnh sẽ cho độ chính xác tốt hơn</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <p>🐾 <strong>DogVision AI</strong> · Powered by Google Teachable Machine & TensorFlow.js</p>
+  <p>Made with ❤️ for dog lovers everywhere</p>
+</footer>
+
+<!-- ===================================================== -->
+<!-- WIDGET TRÒ CHUYỆN VỚI TRỢ LÝ AI (FLOATING AI CHATBOT) -->
+<!-- ===================================================== -->
+<div class="chat-fab-wrap" id="chatFabWrap">
+  <button class="chat-fab" id="btnToggleChat" onclick="toggleAIChat()" title="Trò chuyện cùng Trợ lý Thú cưng AI">
+    <div class="chat-fab-inner">
+      <span class="chat-fab-icon"><i class="fa-solid fa-comments"></i></span>
+      <span class="chat-fab-pulse"></span>
+    </div>
+    <span class="chat-fab-tooltip">💬 Hỏi AI về chó cưng!</span>
+  </button>
+</div>
+
+<!-- CỬA SỔ HỘP THOẠI CHATBOT -->
+<div class="chat-window hidden" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-bot-info">
+      <div class="chat-bot-avatar"><i class="fa-solid fa-stethoscope"></i></div>
+      <div>
+        <h4 class="chat-bot-name">Dr. Bâu – Bác Sĩ Thú Y AI (Pet Hospital)</h4>
+        <div class="chat-bot-status"><span class="status-online-dot"></span> Trực cấp cứu & Tư vấn y khoa 24/7</div>
+      </div>
+    </div>
+    <div class="chat-header-actions">
+      <button class="chat-action-btn" id="btnToggleApiKey" onclick="toggleApiKeyInput()" title="Cấu hình Google Gemini AI Key (để trò chuyện tự do 100%)"><i class="fa-solid fa-key"></i></button>
+      <button class="chat-action-btn" onclick="clearAIChat()" title="Làm mới đoạn hội thoại"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="chat-action-btn" onclick="toggleAIChat()" title="Đóng cửa sổ"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+
+  <!-- API KEY BAR (TÙY CHỌN DÙNG GEMINI AI NẾU CÓ KEY HOẶC DÙNG SMART PET VET ENGINE) -->
+  <div id="apiKeyBar" style="display:none; padding:10px 14px; background:#0d1829; border-bottom:1px solid #1e3a5f;">
+    <div style="font-size:0.75rem; color:#93c5fd; margin-bottom:4px;">
+      🔑 <strong>Kết nối Google Gemini AI (Miễn phí):</strong> Nhập API key để AI suy nghĩ và trả lời mở mọi chủ đề như ChatGPT:
+    </div>
+    <div style="display:flex; gap:6px;">
+      <input type="password" id="geminiApiKeyInput" placeholder="Dán Gemini API Key vào đây..." style="flex:1; background:#1e293b; border:1px solid #334155; color:#fff; padding:6px 10px; border-radius:8px; font-size:0.8rem;" />
+      <button onclick="saveGeminiApiKey()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; cursor:pointer; font-weight:700;">Lưu Key</button>
+    </div>
+    <div style="font-size:0.7rem; color:#64748b; margin-top:4px;">
+      Chưa có key? Lấy miễn phí tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#38bdf8;">Google AI Studio</a>. (Nếu không nhập key, hệ thống vẫn dùng <strong>Bộ não Chuyên gia Thú y AI nội bộ</strong> thông minh).
+    </div>
+  </div>
+
+  <!-- Vùng nội dung tin nhắn -->
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-bubble bot-msg">
+      <div class="msg-avatar"><i class="fa-solid fa-stethoscope"></i></div>
+      <div class="msg-content">
+        <p>👋 <strong>Xin chào! Tôi là Trợ Lý Bác Sĩ Thú Y AI (Dr. Bâu).</strong></p>
+        <p style="margin-top:6px;">Tôi được lập trình để trò chuyện tự do về mọi vấn đề: biểu hiện bệnh, dinh dưỡng, cách nuôi, huấn luyện hoặc so sánh các giống chó.</p>
+        <p style="margin-top:6px; font-size:0.84rem; color:var(--text-muted);">💬 <em>Hãy gõ bất kỳ câu hỏi nào vào ô bên dưới, tôi sẽ giải đáp chi tiết cho bạn ngay!</em></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thanh nhập tin nhắn -->
+  <div class="chat-input-area">
+    <input type="text" id="chatUserInput" placeholder="Nhập câu hỏi cho AI... (VD: Cún bị nôn, chó Husky giá bao nhiêu...)" onkeydown="if(event.key === 'Enter') handleUserSendMessage()" />
+    <button class="chat-send-btn" id="btnSendChat" onclick="handleUserSendMessage()">
+      <i class="fa-solid fa-paper-plane"></i>
+    </button>
+  </div>
+</div>
+
+<script src="app.js?v=1795076806"></script>
+</body>
+</html>
+
